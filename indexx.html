@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - Trumtailieu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background: #f1f5f9;
+    }
+    h1 {
+      text-align: center;
+      color: #1d4ed8;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    input {
+      width: calc(50% - 10px);
+      padding: 10px;
+      margin: 10px 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #1e40af;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+    .logout {
+      float: right;
+      color: red;
+      font-size: 0.9rem;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>👑 Quản lý Tài khoản Thành viên</h1>
+    <p class="logout" onclick="logout()">Đăng xuất</p>
+
+    <div>
+      <input type="email" id="newEmail" placeholder="Email thành viên" />
+      <input type="text" id="newPassword" placeholder="Mật khẩu" />
+      <button onclick="addUser()">➕ Thêm thành viên</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Mật khẩu</th>
+          <th>Xóa</th>
+        </tr>
+      </thead>
+      <tbody id="userList"></tbody>
+    </table>
+  </div>
+
+  <script>
+    if (localStorage.getItem('role') !== 'admin') {
+      location.href = 'index.html';
+    }
+
+    function renderUsers() {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const tbody = document.getElementById('userList');
+      tbody.innerHTML = '';
+      users.forEach((u, i) => {
+        const row = `<tr>
+          <td>${u.email}</td>
+          <td>${u.password}</td>
+          <td><button onclick="deleteUser(${i})">🗑️ Xóa</button></td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function addUser() {
+      const email = document.getElementById('newEmail').value.trim();
+      const password = document.getElementById('newPassword').value.trim();
+      if (!email || !password) return alert('Không được để trống!');
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (users.some(u => u.email === email)) {
+        alert('Email đã tồn tại!');
+        return;
+      }
+      users.push({ email, password });
+      localStorage.setItem('users', JSON.stringify(users));
+      renderUsers();
+      document.getElementById('newEmail').value = '';
+      document.getElementById('newPassword').value = '';
+    }
+
+    function deleteUser(index) {
+      if (!confirm('Bạn có chắc chắn muốn xóa?')) return;
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      users.splice(index, 1);
+      localStorage.setItem('users', JSON.stringify(users));
+      renderUsers();
+    }
+
+    function logout() {
+      localStorage.clear();
+      location.href = 'index.html';
+    }
+
+    renderUsers();
+  </script>
+</body>
+</html>
