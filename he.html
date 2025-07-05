@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập hệ thống TSA</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <h1>🎓 TSA - Đăng nhập</h1>
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Mật khẩu" />
+      <button onclick="login()">Đăng nhập</button>
+      <p class="note">Dành cho tài khoản đã được cấp bởi Admin</p>
+    </div>
+  </div>
+
+  <script>
+    function login() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+      if (email === "admin@example.com" && password === "123456") {
+        localStorage.setItem("role", "admin");
+        window.location.href = "admin.html";
+        return;
+      }
+
+      const found = users.find(u => u.email === email && u.password === password);
+      if (found) {
+        localStorage.setItem("role", "member");
+        localStorage.setItem("userEmail", email);
+        window.location.href = "member.html";
+      } else {
+        alert("Sai tài khoản hoặc mật khẩu");
+      }
+    }
+  </script>
+</body>
+</html>
