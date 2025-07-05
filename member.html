@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Trang Thành viên - TRUM TÀI LIỆU</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #f3f4f6;
+    }
+    .header {
+      background: #1e3a8a;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 30px 20px;
+    }
+    h2 {
+      margin-top: 40px;
+      color: #1e40af;
+    }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin-bottom: 10px;
+    }
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn:hover {
+      background: #1e40af;
+    }
+    .logout {
+      float: right;
+      font-size: 0.9em;
+      color: white;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    /* Phòng thi */
+    #quizBox {
+      margin-top: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .question h4 {
+      margin-bottom: 10px;
+    }
+    .answers label {
+      display: block;
+      margin: 4px 0;
+      cursor: pointer;
+    }
+    .timer {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      color: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📘 TRUM TÀI LIỆU – Tài khoản thành viên</h1>
+    <span class="logout" onclick="logout()">Đăng xuất</span>
+  </div>
+
+  <div class="container">
+    <!-- TÀI LIỆU -->
+    <h2>📚 Tài liệu học tập</h2>
+    <div class="card-grid" id="fileList"></div>
+
+    <!-- PHÒNG THI ẢO -->
+    <h2>🧪 Phòng Thi Ảo TSA</h2>
+    <div id="quizBox">
+      <div class="timer">⏱ Thời gian còn lại: <span id="countdown">--:--</span></div>
+      <div id="questionsContainer"></div>
+      <button class="btn" onclick="submitQuiz()">📤 Nộp bài</button>
+      <div id="resultBox" style="margin-top:20px;"></div>
+    </div>
+  </div>
+
+  <script>
+    if (localStorage.getItem('role') !== 'member') {
+      location.href = 'index.html';
+    }
+
+    function logout() {
+      localStorage.clear();
+      location.href = 'index.html';
+    }
+
+    // === TÀI LIỆU ===
+    function renderFiles() {
+      const files = JSON.parse(localStorage.getItem('files') || '[]');
+      const list = document.getElementById('fileList');
+      list.innerHTML = '';
+      files.forEach(f => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>📄 ${f.name}</h3>
+          <a class="btn" href="${f.link}" target="_blank">Tải về</a>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    // === ĐỀ THI ẢO ===
+    const quiz = [
+      {
+        question: "1. Hàm số y = ax + b là hàm số bậc mấy?",
+        answers: ["Bậc nhất", "Bậc hai", "Bậc ba", "Vô tỉ"],
+        correct: 0
+      },
+      {
+        question: "2. Diện tích hình tròn tính theo công thức nào?",
+        answers: ["2πr", "πr²", "πd", "r²/2"],
+        correct: 1
+      },
+      {
+        question: "3. Tập hợp các số nguyên là?",
+        answers: ["ℝ", "ℕ", "ℤ", "ℚ"],
+        correct: 2
+      }
+    ];
+
+    function renderQuiz() {
+      const container = document.getElementById('questionsContainer');
+      container.innerHTML = '';
+      quiz.forEach((q, i) => {
+        const div = document.createElement('div');
+        div.className = 'question';
+        div.innerHTML = `
+          <h4>${q.question}</h4>
+          <div class="answers">
+            ${q.answers.map((a, j) => `
+              <label><input type="radio" name="q${i}" value="${j}"> ${a}</label>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function submitQuiz() {
+      let correct = 0;
+      quiz.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        if (selected && parseInt(selected.value) === q.correct) {
+          correct++;
+        }
+      });
+      document.getElementById('resultBox').innerHTML = `
+        ✅ Bạn đúng ${correct}/${quiz.length} câu<br>
+        👉 Điểm: ${(correct / quiz.length * 10).toFixed(1)} / 10
+      `;
+      clearInterval(timer);
+    }
+
+    // === ĐẾM NGƯỢC ===
+    let time = 60 * 3; // 3 phút
+    let timer = setInterval(() => {
+      const min = Math.floor(time / 60);
+      const sec = time % 60;
+      document.getElementById('countdown').innerText = `${min}:${sec.toString().padStart(2, '0')}`;
+      if (--time < 0) {
+        clearInterval(timer);
+        submitQuiz();
+      }
+    }, 1000);
+
+    renderFiles();
+    renderQuiz();
+  </script>
+</body>
+</html>
