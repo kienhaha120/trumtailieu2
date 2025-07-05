@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thành viên - Luyện tập</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">🎓 TSA</div>
+    <nav>
+      <a href="#" class="active">🏠 HOME</a>
+      <a href="#">📘 LUYỆN TẬP</a>
+      <a href="#">👤 PROFILE</a>
+      <a href="#">🔔 TIN TỨC</a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="top-bar">
+      <input type="text" id="search" placeholder="Tìm đề" />
+      <select id="filter-grade">
+        <option>Lớp 11</option>
+        <option>Lớp 10</option>
+        <option>Lớp 12</option>
+      </select>
+      <select id="filter-subject">
+        <option>Tất cả môn</option>
+        <option>Toán</option>
+        <option>Lý</option>
+        <option>Hoá</option>
+      </select>
+      <select id="filter-done">
+        <option>Tất cả</option>
+        <option>Chưa làm</option>
+        <option>Đã làm</option>
+      </select>
+    </div>
+
+    <div class="grid-container">
+      <!-- Mỗi đề là 1 card -->
+      <div class="card">
+        <h3>Toán 11 - Đề giữa kỳ 2</h3>
+        <p><em>Nguồn: Sách Cánh Diều</em></p>
+        <p>Lớp 11 - Môn Toán</p>
+        <p>Số câu hỏi: 40</p>
+        <button onclick="startExam('de1.json')">LUYỆN TẬP</button>
+      </div>
+      <div class="card">
+        <h3>Lý 11 - Đề cuối kỳ 1</h3>
+        <p><em>Nguồn: Học Mãi</em></p>
+        <p>Lớp 11 - Môn Lý</p>
+        <p>Số câu hỏi: 30</p>
+        <button onclick="startExam('de2.json')">LUYỆN TẬP</button>
+      </div>
+      <!-- Thêm nhiều đề khác tại đây -->
+    </div>
+  </div>
+
+  <script>
+    function startExam(file) {
+      localStorage.setItem('currentExam', file);
+      window.location.href = 'exam.html';
+    }
+  </script>
+</body>
+</html>
+
+<!-- style.css -->
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  height: 100vh;
+  background: #f8f9fa;
+}
+
+.sidebar {
+  width: 220px;
+  background: #0f5132;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.sidebar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.sidebar nav a {
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background: #198754;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.top-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.top-bar input,
+.top-bar select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+.card:hover {
+  transform: scale(1.02);
+}
+.card button {
+  background: #198754;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+}
+.card button:hover {
+  background: #146c43;
+}
+</style>
