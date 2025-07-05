@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - Trumtailieu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      margin: 0;
+      padding: 30px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #1d4ed8;
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 10px;
+      margin: 10px 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1e40af;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .section {
+      margin-top: 40px;
+    }
+    .logout {
+      float: right;
+      color: red;
+      cursor: pointer;
+      font-size: 0.9rem;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>👑 Trang Quản Trị Admin</h1>
+    <p class="logout" onclick="logout()">Đăng xuất</p>
+
+    <!-- QUẢN LÝ TÀI KHOẢN -->
+    <div class="section">
+      <h2>➕ Tạo Tài Khoản Thành Viên</h2>
+      <input type="email" id="newEmail" placeholder="Email học sinh" />
+      <input type="text" id="newPassword" placeholder="Mật khẩu" />
+      <button onclick="addUser()">Thêm</button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Mật khẩu</th>
+            <th>Xóa</th>
+          </tr>
+        </thead>
+        <tbody id="userList"></tbody>
+      </table>
+    </div>
+
+    <!-- TẢI LÊN TÀI LIỆU -->
+    <div class="section">
+      <h2>📤 Tải Lên Tài Liệu / Đề Thi</h2>
+      <input type="text" id="fileName" placeholder="Tên tài liệu" />
+      <input type="url" id="fileLink" placeholder="Link tải (Google Drive...)" />
+      <button onclick="addFile()">Tải lên</button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Tên tài liệu</th>
+            <th>Link</th>
+            <th>Xóa</th>
+          </tr>
+        </thead>
+        <tbody id="fileList"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    if (localStorage.getItem('role') !== 'admin') {
+      location.href = 'index.html';
+    }
+
+    // === Quản lý tài khoản ===
+    function renderUsers() {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const tbody = document.getElementById('userList');
+      tbody.innerHTML = '';
+      users.forEach((u, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${u.email}</td>
+            <td>${u.password}</td>
+            <td><button onclick="deleteUser(${i})">🗑️</button></td>
+          </tr>`;
+      });
+    }
+
+    function addUser() {
+      const email = document.getElementById('newEmail').value.trim();
+      const password = document.getElementById('newPassword').value.trim();
+      if (!email || !password) return alert('Vui lòng điền đủ email và mật khẩu!');
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (users.some(u => u.email === email)) return alert('Email đã tồn tại!');
+      users.push({ email, password });
+      localStorage.setItem('users', JSON.stringify(users));
+      renderUsers();
+      document.getElementById('newEmail').value = '';
+      document.getElementById('newPassword').value = '';
+    }
+
+    function deleteUser(index) {
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      users.splice(index, 1);
+      localStorage.setItem('users', JSON.stringify(users));
+      renderUsers();
+    }
+
+    // === Quản lý tài liệu ===
+    function renderFiles() {
+      const files = JSON.parse(localStorage.getItem('files') || '[]');
+      const tbody = document.getElementById('fileList');
+      tbody.innerHTML = '';
+      files.forEach((f, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${f.name}</td>
+            <td><a href="${f.link}" target="_blank">Xem/Tải</a></td>
+            <td><button onclick="deleteFile(${i})">🗑️</button></td>
+          </tr>`;
+      });
+    }
+
+    function addFile() {
+      const name = document.getElementById('fileName').value.trim();
+      const link = document.getElementById('fileLink').value.trim();
+      if (!name || !link) return alert('Nhập đủ tên và link!');
+      let files = JSON.parse(localStorage.getItem('files') || '[]');
+      files.push({ name, link });
+      localStorage.setItem('files', JSON.stringify(files));
+      renderFiles();
+      document.getElementById('fileName').value = '';
+      document.getElementById('fileLink').value = '';
+    }
+
+    function deleteFile(index) {
+      let files = JSON.parse(localStorage.getItem('files') || '[]');
+      files.splice(index, 1);
+      localStorage.setItem('files', JSON.stringify(files));
+      renderFiles();
+    }
+
+    function logout() {
+      localStorage.clear();
+      location.href = 'index.html';
+    }
+
+    renderUsers();
+    renderFiles();
+  </script>
+</body>
+</html>
