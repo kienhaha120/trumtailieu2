@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trumtailieu - Đăng nhập</title>
+  <style>
+    body, html { margin:0; padding:0; height:100%; font-family: 'Segoe UI', sans-serif; }
+    .overlay {
+      background: url('https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1350&q=80') 
+                  no-repeat center center fixed;
+      background-size: cover;
+      height:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+    .login-box {
+      background: rgba(255,255,255,0.85);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      text-align:center;
+      width: 320px;
+      animation: fadein 0.8s ease;
+    }
+    .login-box h1 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+    .login-box input {
+      width:100%;
+      padding:12px;
+      margin:12px 0;
+      border-radius:8px;
+      border:1px solid #ccc;
+      font-size: 1rem;
+    }
+    .login-box button {
+      width:100%;
+      padding:12px;
+      background:#007bff;
+      color:white;
+      font-size: 1rem;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      transition: background 0.3s ease;
+    }
+    .login-box button:hover {
+      background:#0056b3;
+    }
+    .error {
+      color:red;
+      font-size:0.9em;
+      margin-top:10px;
+      height:1em;
+    }
+    @keyframes fadein {
+      from { opacity:0; transform: translateY(-10px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="login-box">
+      <h1>📘 TRUM TÀI LIỆU</h1>
+      <input type="text" id="email" placeholder="Email đăng nhập" />
+      <input type="password" id="password" placeholder="Mật khẩu" />
+      <button onclick="login()">Đăng nhập</button>
+      <p id="error" class="error"></p>
+    </div>
+  </div>
+
+  <script>
+    function login() {
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('password').value;
+      if (email === 'admin@hocmai.com' && pass === 'admin123') {
+        localStorage.setItem('role','admin');
+        location.href='dashboard.html';
+      } else {
+        let users = JSON.parse(localStorage.getItem('users')||'[]');
+        if (users.includes(email)) {
+          localStorage.setItem('role','member');
+          localStorage.setItem('email', email);
+          location.href='member.html';
+        } else {
+          document.getElementById('error').innerText = 'Sai tài khoản hoặc chưa có quyền';
+        }
+      }
+    }
+  </script>
+</body>
+</html>
