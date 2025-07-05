@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - Trumtailieu</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 1.5em;
+    }
+    main {
+      padding: 30px;
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      border-radius: 10px;
+      margin-top: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 40px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    ul { list-style: none; padding: 0; }
+    li {
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f8f8;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+    .room { background: #e6f0ff; }
+  </style>
+</head>
+<body>
+
+<header>👑 Bảng điều khiển Admin</header>
+<main>
+  <h2>👤 Quản lý tài khoản thành viên</h2>
+  <input type="text" id="newUser" placeholder="Nhập email thành viên..." />
+  <button onclick="addUser()">➕ Thêm tài khoản</button>
+  <ul id="userList"></ul>
+
+  <h2>📚 Tải lên tài liệu</h2>
+  <input type="text" id="docLink" placeholder="Dán link tài liệu (Google Drive, PDF...)" />
+  <button onclick="uploadDoc()">📎 Tải lên</button>
+  <ul id="docList"></ul>
+
+  <h2>🧪 Tạo phòng thi ảo</h2>
+  <input type="text" id="roomName" placeholder="Tên phòng (VD: Toán 2025)" />
+  <textarea id="roomDesc" rows="3" placeholder="Mô tả ngắn..."></textarea>
+  <button onclick="createRoom()">🏁 Tạo phòng</button>
+  <ul id="roomList"></ul>
+</main>
+
+<script>
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  let docs = JSON.parse(localStorage.getItem("docs") || "[]");
+  let rooms = JSON.parse(localStorage.getItem("rooms") || "[]");
+
+  function render() {
+    const userList = document.getElementById("userList");
+    const docList = document.getElementById("docList");
+    const roomList = document.getElementById("roomList");
+
+    userList.innerHTML = users.map(email =>
+      `<li>${email} <button onclick="removeUser('${email}')">❌</button></li>`
+    ).join("");
+
+    docList.innerHTML = docs.map(link =>
+      `<li><a href="${link}" target="_blank">${link}</a></li>`
+    ).join("");
+
+    roomList.innerHTML = rooms.map(r =>
+      `<li class="room"><strong>${r.name}</strong><br/><small>${r.desc}</small></li>`
+    ).join("");
+  }
+
+  function addUser() {
+    const email = document.getElementById("newUser").value.trim();
+    if (email && !users.includes(email)) {
+      users.push(email);
+      localStorage.setItem("users", JSON.stringify(users));
+      render();
+    }
+    document.getElementById("newUser").value = "";
+  }
+
+  function removeUser(email) {
+    users = users.filter(u => u !== email);
+    localStorage.setItem("users", JSON.stringify(users));
+    render();
+  }
+
+  function uploadDoc() {
+    const link = document.getElementById("docLink").value.trim();
+    if (link) {
+      docs.push(link);
+      localStorage.setItem("docs", JSON.stringify(docs));
+      render();
+    }
+    document.getElementById("docLink").value = "";
+  }
+
+  function createRoom() {
+    const name = document.getElementById("roomName").value.trim();
+    const desc = document.getElementById("roomDesc").value.trim();
+    if (name && desc) {
+      rooms.push({ name, desc });
+      localStorage.setItem("rooms", JSON.stringify(rooms));
+      render();
+    }
+    document.getElementById("roomName").value = "";
+    document.getElementById("roomDesc").value = "";
+  }
+
+  render();
+</script>
+</body>
+</html>
